@@ -5,11 +5,9 @@
 class Device {
 public:
   int Device_ID;
-  Device(int _Device_ID) {
-    Device_ID = _Device_ID;
-    Serial.println("Created Device: " + _Device_ID);
-  }
-
+  Device(int _Device_ID);
+  Device();
+  
   int State;
 
   virtual void On();

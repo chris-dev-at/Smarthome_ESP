@@ -1,5 +1,4 @@
 #include <ESP8266WiFi.h>
-#include <list>
 #include "Devices.h"
 
 const char* WIFI_SSID = "WIFI_SSID";
@@ -11,7 +10,8 @@ WiFiServer server(SERVER_PORT);
 
 WiFiClient client;
 
-Device dev_arr[99];
+Device g();
+//Device devicelist[2];
 
 void setup() {
   initHardware();
