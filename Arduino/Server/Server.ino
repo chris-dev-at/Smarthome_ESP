@@ -1,5 +1,6 @@
 #include <ESP8266WiFi.h>
 #include "Devices.h"
+#include "Libraries/LinkedList/LinkedList.h"
 
 const char* WIFI_SSID = "WIFI_SSID";
 const char* WIFI_PASSWORD = "WIFI_PASSWORD";
@@ -7,20 +8,26 @@ const char* WIFI_PASSWORD = "WIFI_PASSWORD";
 
 
 WiFiServer server(SERVER_PORT);
-
 WiFiClient client;
 
-Device g();
-//Device devicelist[2];
+Device devicelist[99];
 
 void setup() {
   initHardware();
-  setupWiFi();
-  server.begin();
+  //setupWiFi();
+  //server.begin();
 }
 
 void loop() {
-  TCPServer();
+  devicelist[1] = Device(1);
+  devicelist[2] = Relay(2, 3);
+
+  Serial.println(devicelist[1].toString());
+  Serial.println(devicelist[2].toString());
+  Serial.println(devicelist[3].toString());
+  delay(1000);
+  Serial.println("------");
+  //TCPServer();
 }
 
 

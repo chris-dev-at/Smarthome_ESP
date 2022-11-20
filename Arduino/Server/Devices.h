@@ -1,3 +1,4 @@
+#include "WString.h"
 #ifndef _DEVICES_H
 #define _DEVICES_H
 #include "Arduino.h"
@@ -5,13 +6,18 @@
 class Device {
 public:
   int Device_ID;
-  Device(int _Device_ID);
-  Device();
+  Device(int _Device_ID) {
+    Device_ID = _Device_ID;
+  }
+  Device(){ }
   
   int State;
 
-  virtual void On();
-  virtual void Off();
+  virtual void On(){}
+  virtual void Off(){}
+  virtual String toString(){
+    return "Device: " + String(this->Device_ID);
+  }
 };
 
 class Relay : public Device {
