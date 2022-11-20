@@ -1,0 +1,31 @@
+ADD_DEV = 0
+RM_DEV = 1
+ACTION = 2
+STATUS_REPORT = 3
+
+Device_Type:
+	0 	Dummy Device
+	1	Relay
+
+Action:
+		0	Change State
+//Example	1	ChangeLEDColor
+//Example	2	Send 433Mhz ON for ID 1398
+
+0;4;8;1 		PacketType;Device_ID;Pin;Device_Type 		//Adds Device with ID 4 on Pin8, Type: Relay		
+1;4			PacketType;Device_ID				//Removes Device 4
+2;4;state;1		PacketType;Device_ID;Action;Action_Value	//Turns On Device 4
+3;FeedBack_Message	PacketType;Message				//Sends Feedback on what just happened
+
+
+with gaps:
+
+Limits: 
+Max 9999 Devices
+Max 99	 Pins
+Max 99	 Device_Types
+
+0;0004;08;01
+
+//RawFormat
+000040801

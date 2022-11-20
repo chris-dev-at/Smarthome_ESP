@@ -1,4 +1,5 @@
 #include <ESP8266WiFi.h>
+#include <list>
 #include "Devices.h"
 
 const char* WIFI_SSID = "WIFI_SSID";
@@ -10,8 +11,7 @@ WiFiServer server(SERVER_PORT);
 
 WiFiClient client;
 
-Device DeviceList = new Device[99];
-
+Device dev_arr[99];
 
 void setup() {
   initHardware();
@@ -57,37 +57,31 @@ void TCPServer() {
 }
 
 
-void Incomingmsg(String curr_msg)
-{
+void Incomingmsg(String curr_msg) {
   int PacketType = curr_msg[0];
-  switch(PacketType)
-  {
-      case 0: 
+  switch (PacketType) {
+    case 0:
       {
-          CreateDevice(curr_msg);
+        CreateDevice(curr_msg);
       }
-      case 1:
+    case 1:
       {
-
       }
-      case 2:
+    case 2:
       {
-
       }
-      default:
+    default:
       {
         Serial.println("Invalid Packet Type received: " + Message);
-         //Error
+        //Error
       }
   }
-  
-  Device device();
+
 }
 
-void CreateDevice(String curr_msg)
-{
-    int curr_dev_id = curr_msg.substring(1,3).toInt();
-    Serial.println("Current Device ID: " + curr_dev_id)
+void CreateDevice(String curr_msg) {
+  int curr_dev_id = curr_msg.substring(1, 3).toInt();
+  Serial.println("Current Device ID: " + curr_dev_id);
 }
 
 
@@ -101,7 +95,7 @@ void setupWiFi() {
     Serial.println(".");
     delay(100);
   }
-  
+
   Serial.print("ESP32 #2: TCP Server IP address: ");
   Serial.println(WiFi.localIP());
 }

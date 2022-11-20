@@ -3,47 +3,40 @@
 #include "Arduino.h"
 
 class Device {
-  public: 
-    int Device_ID;
-    Device::Device(int _Device_ID)
-    {
-      Serial.println("Starting");
-       Device_ID = _Device_ID;
-    }
+public:
+  int Device_ID;
+  Device(int _Device_ID) {
+    Device_ID = _Device_ID;
+    Serial.println("Created Device: " + _Device_ID);
+  }
 
-    int State;
+  int State;
 
-    virtual void On();
-    virtual void Off();
-    
-  };
+  virtual void On();
+  virtual void Off();
+};
 
-class Relay : public Device{
+class Relay : public Device {
   int DataPin;
-  public:
-    Relay(int _Device_ID, int _DataPin) : Device(_Device_ID)
-    {
-        pinMode(_DataPin, OUTPUT);
-        DataPin = _DataPin;
-    }
+public:
+  Relay(int _Device_ID, int _DataPin)
+    : Device(_Device_ID) {
+    pinMode(_DataPin, OUTPUT);
+    DataPin = _DataPin;
+  }
 
-    virtual void On()
-    {
-        digitalWrite(DataPin, HIGH);
-        State = 1;
-    }
-    virtual void Off()
-    {
-        digitalWrite(DataPin, LOW);
-        State = 0;
-    }
-  
+  virtual void On() {
+    digitalWrite(DataPin, HIGH);
+    State = 1;
+  }
+  virtual void Off() {
+    digitalWrite(DataPin, LOW);
+    State = 0;
+  }
 };
 
 
-class Transmitter_433 : public Device{
-
-
+class Transmitter_433 : public Device {
 };
 
 
