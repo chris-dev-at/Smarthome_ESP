@@ -1,3 +1,5 @@
+<strong><a href= "https://github.com/ivanseidel/LinkedList">Library by ivanseidel</a></strong>
+
 # LinkedList
 
 This library was developed targeting **`Arduino`** applications. However, works just great with any C++.
