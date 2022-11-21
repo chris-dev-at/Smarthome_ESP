@@ -37,6 +37,10 @@ public:
     digitalWrite(DataPin, LOW);
     State = 0;
   }
+
+  virtual String toString(){
+    return "Relay: " + String(this->Device_ID);
+  }  
 };
 
 

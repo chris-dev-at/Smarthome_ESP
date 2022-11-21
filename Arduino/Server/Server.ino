@@ -10,27 +10,29 @@ const char* WIFI_PASSWORD = "WIFI_PASSWORD";
 WiFiServer server(SERVER_PORT);
 WiFiClient client;
 
-Device devicelist[99];
+LinkedList<Device> devicelist = LinkedList<Device>();
+
+/*
+Note:
+
+C++ does not like Polymorphism Arrays
+So there cant be Relay and Device in the same Array
+Different Lists for All Relays, Transmitters, ...
+
+*/
+
 
 void setup() {
   initHardware();
-  //setupWiFi();
-  //server.begin();
+  setupWiFi();
+  server.begin();
 }
 
 void loop() {
-  devicelist[1] = Device(1);
-  devicelist[2] = Relay(2, 3);
-
-  Serial.println(devicelist[1].toString());
-  Serial.println(devicelist[2].toString());
-  Serial.println(devicelist[3].toString());
-  delay(1000);
-  Serial.println("------");
-  //TCPServer();
+  TCPServer();
 }
 
-
+#pragma region Server Handeling
 
 String Message = "";
 char lastchar = ' ';
@@ -63,6 +65,10 @@ void TCPServer() {
   }
 }
 
+#pragma endregion
+
+
+#pragma region Events
 
 void Incomingmsg(String curr_msg) {
   int PacketType = curr_msg[0];
@@ -86,11 +92,26 @@ void Incomingmsg(String curr_msg) {
 
 }
 
+#pragma endregion
+
+#pragma region Functions
+
+void sendString(String data){ //not Tested yet
+  for (int i = 0; i < data.length(); i++) {
+    client.write(data[i]);
+  }
+}
+
 void CreateDevice(String curr_msg) {
   int curr_dev_id = curr_msg.substring(1, 3).toInt();
   Serial.println("Current Device ID: " + curr_dev_id);
 }
 
+#pragma endregion
+
+
+
+#pragma region Setup Voids
 
 void setupWiFi() {
   WiFi.mode(WIFI_STA);
@@ -110,3 +131,5 @@ void setupWiFi() {
 void initHardware() {
   Serial.begin(115200);
 }
+
+#pragma endregion
