@@ -9,13 +9,13 @@ public:
   Device(int _Device_ID) {
     Device_ID = _Device_ID;
   }
-  Device(){ }
-  
+  Device() {}
+
   int State;
 
-  virtual void On(){}
-  virtual void Off(){}
-  virtual String toString(){
+  virtual void On() {}
+  virtual void Off() {}
+  virtual String toString() {
     return "Device: " + String(this->Device_ID);
   }
 };
@@ -25,7 +25,7 @@ class Relay : public Device {
 public:
   Relay(int _Device_ID, int _DataPin)
     : Device(_Device_ID) {
-    pinMode(_DataPin, OUTPUT);
+    //pinMode(_DataPin, OUTPUT);
     DataPin = _DataPin;
   }
 
@@ -38,9 +38,9 @@ public:
     State = 0;
   }
 
-  virtual String toString(){
+  virtual String toString() {
     return "Relay: " + String(this->Device_ID);
-  }  
+  }
 };
 
 

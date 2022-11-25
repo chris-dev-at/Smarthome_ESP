@@ -1,9 +1,11 @@
 #include <ESP8266WiFi.h>
 #include "Devices.h"
 #include "Libraries/LinkedList/LinkedList.h"
+#include "Libraries/ESP/ESP.h"
 
-const char* WIFI_SSID = "WIFI_SSID";
-const char* WIFI_PASSWORD = "WIFI_PASSWORD";
+const char* WIFI_SSID = "Your WIFI-Name";
+const char* WIFI_PASSWORD = "Your WIFI-Password";
+const char* HOSTNAME = "TestHost123";
 #define SERVER_PORT 25567
 
 
@@ -11,25 +13,40 @@ WiFiServer server(SERVER_PORT);
 WiFiClient client;
 
 LinkedList<Device> devicelist = LinkedList<Device>();
-
-/*
-Note:
-
-C++ does not like Polymorphism Arrays
-So there cant be Relay and Device in the same Array
-Different Lists for All Relays, Transmitters, ...
-
-*/
+Device devicelist2[99];
 
 
 void setup() {
   initHardware();
-  setupWiFi();
-  server.begin();
+
+  //Polymorphism Testing
+  /*delay(3000);
+  Serial.println("Device creating...");
+  Relay d(3, 7);
+  Relay r(2, 6);
+  Device d1(2);
+  Serial.println("Device created!");
+
+  Serial.println("Adding to List...");
+  devicelist.add(d);
+  devicelist.add(d1);
+  devicelist.add(r);
+  Serial.println("Added to List!");
+
+  Serial.println("Adding to Array...");
+  devicelist2[0] = d;
+  devicelist2[1] = r;
+  devicelist2[2] = d1;
+  Serial.println("Added to Array!");
+
+  Serial.print("Success!");*/
+
+  //setupWiFi();
+  //server.begin();
 }
 
 void loop() {
-  TCPServer();
+  //TCPServer();
 }
 
 #pragma region Server Handeling
@@ -71,23 +88,31 @@ void TCPServer() {
 #pragma region Events
 
 void Incomingmsg(String curr_msg) {
-  int PacketType = curr_msg[0];
+  int PacketType = curr_msg[0]-'0'; // curr_msg[0] => 
   switch (PacketType) {
     case 0:
       {
         CreateDevice(curr_msg);
       }
+      break;
     case 1:
       {
       }
+      break;
     case 2:
       {
+      }
+      break;
+      case 3:
+      {
+        ESP.restart();
       }
     default:
       {
         Serial.println("Invalid Packet Type received: " + Message);
         //Error
       }
+      break;
   }
 
 }
@@ -104,7 +129,7 @@ void sendString(String data){ //not Tested yet
 
 void CreateDevice(String curr_msg) {
   int curr_dev_id = curr_msg.substring(1, 3).toInt();
-  Serial.println("Current Device ID: " + curr_dev_id);
+  Serial.println("Adding Device " + String(curr_dev_id));
 }
 
 #pragma endregion
@@ -114,6 +139,7 @@ void CreateDevice(String curr_msg) {
 #pragma region Setup Voids
 
 void setupWiFi() {
+  WiFi.hostname(HOSTNAME);
   WiFi.mode(WIFI_STA);
   WiFi.setHostname("ESP32_Buzzer");
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
