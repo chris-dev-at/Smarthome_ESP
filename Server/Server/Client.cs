@@ -13,14 +13,14 @@ namespace Server
     public class Client
     {
         //public variables
-        public bool Alive = true; //used for a keepAlive Loop which keeps the Application Alive
         public string serverIP { get; private set; }
         public int serverPort { get; private set; }
-        public int buffer { get; set; }
+        public int buffer { get; private set; }
 
         //private variables
         private Socket _clientsocket = new Socket(
             AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        private bool Alive = true; //used for a keepAlive Loop which keeps the Application Alive
 
         //EventChains
         public event EventHandler OnClientStart;
@@ -100,13 +100,22 @@ namespace Server
 
             string ReadStreamAsText()
             {
-                var buffer = new byte[this.buffer];
-                int received = _clientsocket.Receive(buffer, SocketFlags.None);
-                if (received == 0) return null;
-                var data = new byte[received];
-                Array.Copy(buffer, data, received);
-                string text = Encoding.ASCII.GetString(data);
-                return text;
+                try
+                {
+                    var buffer = new byte[this.buffer];
+                    int received = _clientsocket.Receive(buffer, SocketFlags.None);
+                    if (received == 0) return null;
+                    var data = new byte[received];
+                    Array.Copy(buffer, data, received);
+                    string text = Encoding.ASCII.GetString(data);
+                    return text;
+
+                }
+                catch (Exception)
+                {
+                    ShutdownClient("Server did not respond!");
+                }
+                return null;
             }
         }
         public void sendString(string msg)
@@ -121,8 +130,10 @@ namespace Server
 
         public void ShutdownClient(string Reason = "Client shutting down...")
         {
-            Alive = false;
             OnClientStop(this, new DefaultClientEventArgs(Reason));
+            Alive = false;
+            this._clientsocket.Shutdown(SocketShutdown.Both);
+            this._clientsocket.Close();
         }
 
         private void EventExecuted(object sender, EventArgs e) //is needed if nothing is contained in event chain
