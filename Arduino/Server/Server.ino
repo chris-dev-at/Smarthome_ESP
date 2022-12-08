@@ -145,9 +145,19 @@ void CreateDevice(String curr_msg) {
      case 0:
         break;
      case 1:
+     {
         Relay* tmp = new Relay(dev_id, DataPin);
         devicelist[dev_id] = tmp;
-        break;
+     }
+      break;
+     case 2:
+     {
+        Transmitter_433* tmp = new Transmitter_433(dev_id, DataPin);
+        devicelist[dev_id] = tmp;
+     }
+      break;  
+        
+
   }
 }
 
@@ -174,7 +184,7 @@ void Action(String curr_msg)
     Action.replace("0", "");
     String ActionInfo = curr_msg.substring(14);
     switch(dev_type){
-      case 1:
+      case 1: //Relay
       {
         Relay* tmp = static_cast<Relay*>(devicelist[dev_id]);
         if(Action == "toggle")
@@ -191,6 +201,28 @@ void Action(String curr_msg)
         }
       }
       break;
+
+      case 2: //433mhz Transmitter
+      {
+        Transmitter_433* tmp = static_cast<Transmitter_433*>(devicelist[dev_id]);
+        if(Action == "toggle")
+        {
+          Serial.println("toggle Action2:" + Action + " ActionInfo:"+ActionInfo);
+          String Code = ActionInfo.substring(1);
+          if(ActionInfo.substring(0,1) == "1")
+          {
+            Serial.println("ON" + Code);
+              tmp->On(Code);
+          }
+          else
+          {
+            Serial.println("OFF" + Code);
+              tmp->Off(Code);
+          }
+        }
+      }
+      break;
+
       default:
         break;
     }

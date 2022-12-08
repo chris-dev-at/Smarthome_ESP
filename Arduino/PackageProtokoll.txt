@@ -6,6 +6,8 @@ STATUS_REPORT = 3
 Device_Type:
 	0 	Dummy Device
 	1	Relay
+	2	433mhz Transmitter
+	3	LED_STRIPE
 
 Action:
 		0	Change State
@@ -38,3 +40,7 @@ Simple Toggle Test with PIN D0:
 0010116.
 20101000toggle1.
 on Server
+
+Simple Toggle Test for 433mhz Receiver on Pin D2(4) and Code 10000 10000
+0010204
+20102000toggle11000010000
