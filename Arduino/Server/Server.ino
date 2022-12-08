@@ -137,7 +137,7 @@ void CreateDevice(String curr_msg) {
      }
      case 3: // DeviceType = LED Stripe
      {
-        LED_Stripe* tmp = new LED_Stripe(dev_id, DataPin);
+        LED_Stripe* tmp = new LED_Stripe(dev_id, DataPin, 20);
         devicelist[dev_id] = tmp;
      }
       break;  

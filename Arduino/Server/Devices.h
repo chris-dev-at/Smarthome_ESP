@@ -82,7 +82,6 @@ class Transmitter_433 : public Device {
   }
 
 };
-
 class LED_Stripe : public Device {
     int DataPin;
     int LED_Length;
@@ -95,8 +94,7 @@ class LED_Stripe : public Device {
         DataPin = _DataPin;
         LED_Length = _LED_Length;
         leds = new CRGB[_LED_Length];
-        FastLED.addLeds<NEOPIXEL, DataPin>(leds, LED_Length);
-
+        FastLED.addLeds<NEOPIXEL, DataPin>(leds, LED_Length); //need for macro variables (dont know how to fix)
       }
 
     void DimmLED(int Percent)
@@ -110,7 +108,7 @@ class LED_Stripe : public Device {
       int G = Color.substring(3,6).toInt();
       int B = Color.substring(6,9).toInt();
       Serial.println("Changing Color to: " + String(R) + ", " + String(G) + ", " + String(B));
-      fill_solid(leds, NUM_LEDS, CRGB(R,G,B));
+      //fill_solid(leds, NUM_LEDS, CRGB(R,G,B));
       FastLED.show();  
     }
 
