@@ -33,3 +33,8 @@ Max 99	 Device_Types
 //Sample for Toggle
 20401000toggle1
 2040100chngcol254032
+
+Simple Toggle Test with PIN D0:
+0010116.
+20101000toggle1.
+on Server

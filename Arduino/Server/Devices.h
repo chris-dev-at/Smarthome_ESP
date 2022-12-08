@@ -25,7 +25,7 @@ class Relay : public Device {
 public:
   Relay(int _Device_ID, int _DataPin)
     : Device(_Device_ID) {
-    //pinMode(_DataPin, OUTPUT);
+    pinMode(_DataPin, OUTPUT);
     DataPin = _DataPin;
   }
 

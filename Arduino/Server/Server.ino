@@ -3,8 +3,8 @@
 #include "Libraries/LinkedList/LinkedList.h"
 #include "Libraries/ESP/ESP.h"
 
-const char* WIFI_SSID = "";
-const char* WIFI_PASSWORD = "";
+const char* WIFI_SSID = "YOUR-WIFI";
+const char* WIFI_PASSWORD = "YOUR-WIFI-PASSWORD";
 const char* HOSTNAME = "TestHost123";
 #define SERVER_PORT 25567
 
@@ -86,6 +86,7 @@ void TCPServer() {
 #pragma region Events
 
 void Incomingmsg(String curr_msg) {
+  curr_msg.replace(".","");
   int PacketType = curr_msg[0]-'0'; // curr_msg[0] => 
   switch (PacketType) {
     case 0:
@@ -171,15 +172,15 @@ void Action(String curr_msg)
     int dev_type = curr_msg.substring(3, 5).toInt();
     String Action = curr_msg.substring(5, 14);
     Action.replace("0", "");
-    String Actioninfo = curr_msg.substring(14);
+    String ActionInfo = curr_msg.substring(14);
     switch(dev_type){
       case 1:
       {
         Relay* tmp = static_cast<Relay*>(devicelist[dev_id]);
         if(Action == "toggle")
         {
-          Serial.println("toggle");
-           if(Actioninfo == "1")
+          Serial.println("toggle Action:" + Action + " ActionInfo:"+ActionInfo);
+           if(ActionInfo == "1")
            {
               tmp->On();
            }
@@ -221,11 +222,6 @@ void setupWiFi() {
 
 void initHardware() {
   Serial.begin(115200);
-
-  pinMode(LED_BUILTIN, OUTPUT); // LED als Output definieren
-  digitalWrite(LED_BUILTIN, LOW); 
-
-
 }
 
 #pragma endregion
