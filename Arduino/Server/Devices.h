@@ -9,7 +9,7 @@ public:
   Device(int _Device_ID) {
     Device_ID = _Device_ID;
   }
-  Device() {}
+  Device() { Device_ID = -1; }
 
   int State;
 
@@ -30,12 +30,21 @@ public:
   }
 
   virtual void On() {
+
+    // Testing
+    //digitalWrite(LED_BUILTIN, HIGH); 
+
     digitalWrite(DataPin, HIGH);
     State = 1;
+    Serial.println("RELAY TURN ON");
   }
   virtual void Off() {
+    //Testing
+    //digitalWrite(LED_BUILTIN, LOW); 
+
     digitalWrite(DataPin, LOW);
     State = 0;
+    Serial.println("RELAY TURN OFF");
   }
 
   virtual String toString() {

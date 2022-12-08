@@ -12,20 +12,20 @@ Action:
 //Example	1	ChangeLEDColor
 //Example	2	Send 433Mhz ON for ID 1398
 
-0;4;8;1 		PacketType;Device_ID;Pin;Device_Type 		//Adds Device with ID 4 on Pin8, Type: Relay		
-1;4			PacketType;Device_ID				//Removes Device 4
-2;4;state;1		PacketType;Device_ID;Action;Action_Value	//Turns On Device 4
-3;FeedBack_Message	PacketType;Message				//Sends Feedback on what just happened
+0;4;8;1 		PacketType;Device_ID;Device_Type;DataPin 		//Adds Device with ID 4 on Pin8, Type: Relay		
+1;4			PacketType;Device_ID						//Removes Device 4
+2;4;1;state;1		PacketType;Device_ID;Device_Type;Action;Action_Value	//Turns On Relay 4
+3;FeedBack_Message	PacketType;Message						//Sends Feedback on what just happened
 
 
 with gaps:
 
 Limits: 
-Max 9999 Devices
+Max 40 Devices (limited in code for performance)
 Max 99	 Pins
 Max 99	 Device_Types
 
-0;0004;08;01
+0;04;01;08
 
 //RawFormat
-000040801
+0040108
