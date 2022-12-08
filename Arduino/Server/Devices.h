@@ -2,7 +2,8 @@
 #ifndef _DEVICES_H
 #define _DEVICES_H
 #include "Arduino.h"
-#include <RCSwitch.h>
+#include "Libraries/rcswitch/RCSwitch.h"
+#include "Libraries/FastLED/src/FastLED.h"
 
 class Device {
 public:
@@ -32,12 +33,12 @@ public:
 
   virtual void On() {
     digitalWrite(DataPin, HIGH);
-    Serial.println("Relay " + this->Device_ID + " turned on.")
+    Serial.println("Relay " + String(Device_ID) + " turned on.");
     State = 1;
   }
   virtual void Off() {
     digitalWrite(DataPin, LOW);
-    Serial.println("Relay " + this->Device_ID + " turned off.")
+    Serial.println("Relay " + String(Device_ID) + " turned off.");
     State = 0;
   }
 
@@ -68,7 +69,7 @@ class Transmitter_433 : public Device {
     const char* BCode = BCode_.c_str();
     sender.switchOn(ACode,BCode);
     State = 1;
-    Serial.println("Transmitter turned Device " + this->Device_ID +  " ON: " + String(ACode) + ", " + String(BCode));
+    Serial.println("Transmitter turned Device " + String(Device_ID) +  " ON: " + String(ACode) + ", " + String(BCode));
   }
   virtual void Off(String Code) {
     String ACode_ = Code.substring(0,5);
@@ -77,13 +78,41 @@ class Transmitter_433 : public Device {
     const char* BCode = BCode_.c_str();
     sender.switchOff(ACode,BCode);
     State = 0;
-    Serial.println("Transmitter turned Device " + this->Device_ID +  " OFF: " + String(ACode) + ", " + String(BCode));
+    Serial.println("Transmitter turned Device " + String(Device_ID) +  " OFF: " + String(ACode) + ", " + String(BCode));
   }
 
 };
 
 class LED_Stripe : public Device {
+    int DataPin;
+    int LED_Length;
 
+    CRGB* leds;
+    public:
+      LED_Stripe(int _Device_ID, int _DataPin, int _LED_Length)
+        : Device(_Device_ID) {
+        pinMode(_DataPin, OUTPUT);
+        DataPin = _DataPin;
+        LED_Length = _LED_Length;
+        leds = new CRGB[_LED_Length];
+        FastLED.addLeds<NEOPIXEL, DataPin>(leds, LED_Length);
+
+      }
+
+    void DimmLED(int Percent)
+    {
+      FastLED.setBrightness(Percent);
+      FastLED.show();
+    }
+    void ChangeColor(String Color)
+    {
+      int R = Color.substring(0,3).toInt();
+      int G = Color.substring(3,6).toInt();
+      int B = Color.substring(6,9).toInt();
+      Serial.println("Changing Color to: " + String(R) + ", " + String(G) + ", " + String(B));
+      fill_solid(leds, NUM_LEDS, CRGB(R,G,B));
+      FastLED.show();  
+    }
 
 };
 

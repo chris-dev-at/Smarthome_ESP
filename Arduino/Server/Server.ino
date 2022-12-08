@@ -36,7 +36,7 @@ void TCPServer() {
       // try to connect to a new client
       client = server.available();
     } else {
-      Serial.println("Client connected: " + client.remoteIP());
+      //Serial.println("Client connected: ");
       // read data from the connected client
 
       if (client.available() > 0) {
@@ -113,6 +113,7 @@ void CreateDevice(String curr_msg) {
   int dev_id = curr_msg.substring(1, 3).toInt();
   int Device_Type = curr_msg.substring(3, 5).toInt();
   int DataPin = curr_msg.substring(5,7).toInt();
+  
   if(dev_id > 40) return; //replace Device with Empty Device (remove)
   Serial.println("Dev_ID " + String(dev_id));
   Serial.println("Pin " + String(DataPin));
@@ -130,7 +131,13 @@ void CreateDevice(String curr_msg) {
       break;
      case 2: // DeviceType = Transmitter_433
      {
+        int AdditionalInfo = curr_msg.substring(7).toInt();
         Transmitter_433* tmp = new Transmitter_433(dev_id, DataPin);
+        devicelist[dev_id] = tmp;
+     }
+     case 3: // DeviceType = LED Stripe
+     {
+        LED_Stripe* tmp = new LED_Stripe(dev_id, DataPin);
         devicelist[dev_id] = tmp;
      }
       break;  
@@ -149,7 +156,7 @@ void RemoveDevice(String curr_msg)
       Serial.println("Device does not exist!");
       return;
     }
-    Serial.println("Device " + dev_id + " removed");            
+    Serial.println("Device " + String(dev_id) + " removed");            
     devicelist[dev_id] = new Device(); //replace Device with Empty Device (remove)
 }
 
