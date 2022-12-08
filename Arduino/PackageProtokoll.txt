@@ -14,7 +14,7 @@ Action:
 
 0;4;8;1 		PacketType;Device_ID;Device_Type;DataPin 		//Adds Device with ID 4 on Pin8, Type: Relay		
 1;4			PacketType;Device_ID						//Removes Device 4
-2;4;1;state;1		PacketType;Device_ID;Device_Type;Action;Action_Value	//Turns On Relay 4
+2;4;1;state;1		PacketType;Device_ID;Device_Type;Action	//Turns On Relay 4
 3;FeedBack_Message	PacketType;Message						//Sends Feedback on what just happened
 
 
@@ -29,3 +29,7 @@ Max 99	 Device_Types
 
 //RawFormat
 0040108
+
+//Sample for Toggle
+20401000toggle1
+2040100chngcol254032
