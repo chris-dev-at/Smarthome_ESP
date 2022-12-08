@@ -32,13 +32,13 @@ public:
 
   virtual void On() {
     digitalWrite(DataPin, HIGH);
+    Serial.println("Relay " + this->Device_ID + " turned on.")
     State = 1;
-    Serial.println("RELAY TURN ON");
   }
   virtual void Off() {
     digitalWrite(DataPin, LOW);
+    Serial.println("Relay " + this->Device_ID + " turned off.")
     State = 0;
-    Serial.println("RELAY TURN OFF");
   }
 
   virtual String toString() {
@@ -62,30 +62,27 @@ class Transmitter_433 : public Device {
     }
 
   virtual void On(String Code) {
-    Serial.println("Code: " + Code);
     String ACode_ = Code.substring(0,5);
     String BCode_ = Code.substring(5,10);
     const char* ACode = ACode_.c_str();
     const char* BCode = BCode_.c_str();
     sender.switchOn(ACode,BCode);
     State = 1;
-    Serial.println("Turn ON " + String(ACode) + ", " + String(BCode));
+    Serial.println("Transmitter turned Device " + this->Device_ID +  " ON: " + String(ACode) + ", " + String(BCode));
   }
   virtual void Off(String Code) {
-    Serial.println("Code: " + Code);
     String ACode_ = Code.substring(0,5);
     String BCode_ = Code.substring(5,10);
     const char* ACode = ACode_.c_str();
     const char* BCode = BCode_.c_str();
     sender.switchOff(ACode,BCode);
     State = 0;
-    Serial.println("Turn OFF " + String(ACode) + ", " + String(BCode));
+    Serial.println("Transmitter turned Device " + this->Device_ID +  " OFF: " + String(ACode) + ", " + String(BCode));
   }
 
 };
 
 class LED_Stripe : public Device {
-
 
 
 };
