@@ -15,12 +15,13 @@ namespace Server
         //public variables
         public string serverIP { get; private set; }
         public int serverPort { get; private set; }
-        public int buffer { get; private set; }
+        public int serverBuffer { get; private set; }
+        public bool Alive { get; private set; } //used for a keepAlive Loop which keeps the Application Alive
+        public bool logEvents { get; set; }
 
         //private variables
         private Socket _clientsocket = new Socket(
             AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-        private bool Alive = true; //used for a keepAlive Loop which keeps the Application Alive
 
         //EventChains
         public event EventHandler OnClientStart;
@@ -31,16 +32,18 @@ namespace Server
 
 
         //constructors
-        public Client(string serverIP, int Port, int buffer)
+        public Client(string serverIP, int serverPort, int serverBuffer = 256, bool logEvents = false)
         {
             this.serverIP = serverIP;
-            serverPort = Port;
-            this.buffer = buffer;
+            this.serverPort = serverPort;
+            this.serverBuffer = serverBuffer;
+            this.Alive = true;
+            this.logEvents = logEvents;
 
-            OnClientStart += EventExecuted;
-            OnClientConnect += EventExecuted;
-            OnClientMessage += EventExecuted;
-            OnClientStop += EventExecuted;
+            OnClientStart += EventLogger;
+            OnClientConnect += EventLogger;
+            OnClientMessage += EventLogger;
+            OnClientStop += EventLogger;
         }
 
         public void Connect()
@@ -61,7 +64,7 @@ namespace Server
                 }
                 catch { Console.WriteLine("Connection failed! retrying in 1000ms..."); Thread.Sleep(1000); }
             }
-            Console.WriteLine($"Connected to {serverIP}:{serverPort}");
+            OnClientConnect(this, new DefaultClientEventArgs($"Connected to {serverIP}:{serverPort}"));
 
             //keep alive with requestloop
             Alive = true;
@@ -69,11 +72,10 @@ namespace Server
             {
                 while (Alive)
                 {
-                    Thread.Sleep(100);
+                    Thread.Sleep(200);
                     if (!_clientsocket.Connected)
                     {
-                        ShutdownClient();
-                        Environment.Exit(0);
+                        ShutdownClient("Client was Shutdown! {Alive=false}");
                     }
                 }
 
@@ -92,17 +94,19 @@ namespace Server
         {
             if (!_clientsocket.Connected)
             {
-                ShutdownClient("Lost Connection");
+                ShutdownClient("Lost Connection... {RequestLoop finished}");
             }
 
-            string text = ReadStreamAsText();
+            string text = ReadStream();
             if (text == null) return;
 
-            string ReadStreamAsText()
+            OnClientMessage(this, new OnMessageClientEventArgs("Incomming Message", text));
+
+            string ReadStream()
             {
                 try
                 {
-                    var buffer = new byte[this.buffer];
+                    var buffer = new byte[this.serverBuffer];
                     int received = _clientsocket.Receive(buffer, SocketFlags.None);
                     if (received == 0) return null;
                     var data = new byte[received];
@@ -113,45 +117,71 @@ namespace Server
                 }
                 catch (Exception)
                 {
-                    ShutdownClient("Server did not respond!");
+                    ShutdownClient("Server did not respond! {ReadStream}");
                 }
                 return null;
             }
         }
         public void sendString(string msg)
         {
-            byte[] buffer = Encoding.ASCII.GetBytes(msg);
-            _clientsocket.Send(buffer, 0, buffer.Length, SocketFlags.None);
+            try
+            {
+                byte[] buffer = Encoding.ASCII.GetBytes(msg);
+                _clientsocket.Send(buffer, 0, buffer.Length, SocketFlags.None);
+            }
+            catch (SocketException)
+            {
+            }
+            catch (ObjectDisposedException)
+            {
+                ShutdownClient("Client was Disposed. Failed sending {sendString}");
+            }
         }
         private void IncomingMsg(string msg)
         {
-            OnClientMessage(this, new OnMessageEventArgs("Incomming Message", msg));
+            OnClientMessage(this, new OnMessageClientEventArgs("Incomming Message", msg));
         }
 
         public void ShutdownClient(string Reason = "Client shutting down...")
         {
-            OnClientStop(this, new DefaultClientEventArgs(Reason));
-            Alive = false;
-            this._clientsocket.Shutdown(SocketShutdown.Both);
-            this._clientsocket.Close();
+            if (Alive) //prevent Shutdown to happen on multiple occasions
+            {
+                OnClientStop(this, new DefaultClientEventArgs(Reason));
+                Alive = false;
+                this._clientsocket.Close();
+            }
         }
 
-        private void EventExecuted(object sender, EventArgs e) //is needed if nothing is contained in event chain
+        private void EventLogger(object sender, EventArgs e) //is needed if nothing is contained in event chain
         {
-            if (e is DefaultClientEventArgs)
-                Console.WriteLine("Event: " + (e as DefaultClientEventArgs).Reason);
-            if (e is OnMessageEventArgs)
-                Console.WriteLine("Message: " + (e as OnMessageEventArgs).Reason + "\nContent: " + (e as OnMessageEventArgs).Message);
+            if (this.logEvents)
+            {
+                if (e is DefaultClientEventArgs)
+                    Console.WriteLine("Event: " + (e as DefaultClientEventArgs).Reason);
+                if (e is OnMessageClientEventArgs)
+                    Console.WriteLine("Message: " + (e as OnMessageClientEventArgs).Reason + "\nContent: " + (e as OnMessageClientEventArgs).Message);
+                if (e is not DefaultClientEventArgs && e is not OnMessageClientEventArgs)
+                    Console.WriteLine($"Unknown Event has been executed from {(sender as Client)}");
+            }
+
         }
         #endregion
+
+        #region Override
+
+        public override string ToString() => $"Client: {this._clientsocket.RemoteEndPoint}";
+
+        #endregion
+
+
     }
-    public class OnMessageEventArgs : DefaultClientEventArgs
+    public class OnMessageClientEventArgs : DefaultClientEventArgs
     {
         public string Message;
-        public OnMessageEventArgs() { }
-        public OnMessageEventArgs(string reason, string Message)
+        public OnMessageClientEventArgs() { }
+        public OnMessageClientEventArgs(string Reason, string Message)
         {
-            Reason = reason;
+            this.Reason = Reason;
             this.Message = Message;
         }
     }
@@ -159,9 +189,9 @@ namespace Server
     {
         public string Reason;
         public DefaultClientEventArgs() { }
-        public DefaultClientEventArgs(string reason)
+        public DefaultClientEventArgs(string Reason)
         {
-            Reason = reason;
+            this.Reason = Reason;
         }
     }
 }

@@ -1,19 +1,39 @@
-﻿namespace Server
+﻿using System.Net.Sockets;
+using System.Net;
+using System.Security.Cryptography;
+
+namespace Server
 {
     internal class Program
     {
         static void Main(string[] args)
         {
-            //test
-            Client c1 = new Client("kolinsky.net", 25567, 256);
-            c1.Connect();
-            c1.sendString("0010204");
-            while (true)
+
+            //DOES NOT WORK YET
+            /*string IP = GetLocalIPAddress();
+            Console.WriteLine(IP);
+            string GetLocalIPAddress()
             {
-                c1.sendString("20102000toggle11000010000");
-                Thread.Sleep(3000);
-                c1.sendString("20102000toggle01000010000");
-                Thread.Sleep(3000);
+                var host = Dns.GetHostEntry("TestHost123");
+                foreach (var ip in host.AddressList)
+                {
+                    if (ip.AddressFamily == AddressFamily.InterNetwork)
+                    {
+                        return ip.ToString();
+                    }
+                }
+                throw new Exception("No network adapters with an IPv4 address in the system!");
+            }*/
+
+            Client c1 = new Client("10.0.0.190", 25567, serverBuffer:1024, logEvents: true);
+            c1.Connect();
+            while (c1.Alive)
+            {
+                Console.WriteLine("App alive Client Alive: " + c1.Alive);
+                c1.sendString("0010116.");  
+                c1.sendString("20101000toggle1.");  
+                c1.sendString("20101000toggle0.");  
+                Thread.Sleep(1000);
             }
         }
     }

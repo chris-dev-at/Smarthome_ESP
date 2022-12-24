@@ -94,7 +94,7 @@ class LED_Stripe : public Device {
         DataPin = _DataPin;
         LED_Length = _LED_Length;
         leds = new CRGB[_LED_Length];
-        FastLED.addLeds<NEOPIXEL, DataPin>(leds, LED_Length); //need for macro variables (dont know how to fix)
+        //FastLED.addLeds<NEOPIXEL, DataPin>(leds, LED_Length); //need for macro variables (dont know how to fix)
       }
 
     void DimmLED(int Percent)
